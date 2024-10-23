@@ -1,0 +1,12 @@
+{
+  "type": "frost_tech:ore_freezing",
+  "ingredients": [
+    {
+      "item": "minecraft:raw_iron"
+    }
+  ],
+  "output": {
+    "count": 1,
+    "item": "frost_tech:frozen_raw_iron"
+  }
+}

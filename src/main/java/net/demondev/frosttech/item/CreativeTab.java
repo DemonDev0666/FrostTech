@@ -24,6 +24,7 @@ public class CreativeTab {
                         pOutput.accept(ModItems.FROZEN_RAW_GOLD.get());
                         pOutput.accept(ModItems.FROZEN_RAW_COPPER.get());
                         pOutput.accept(ModBlocks.FROSTY_STONE.get());
+                        pOutput.accept(ModBlocks.ORE_FREEZER.get());
                     }).build());
 
     public static void register(IEventBus eventBus) {

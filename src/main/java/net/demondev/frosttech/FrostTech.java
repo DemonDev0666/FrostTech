@@ -2,8 +2,13 @@ package net.demondev.frosttech;
 
 import com.mojang.logging.LogUtils;
 import net.demondev.frosttech.block.ModBlocks;
+import net.demondev.frosttech.block.entity.ModBlockEntities;
 import net.demondev.frosttech.item.CreativeTab;
 import net.demondev.frosttech.item.ModItems;
+import net.demondev.frosttech.recipes.ModRecipes;
+import net.demondev.frosttech.screen.ModMenuTypes;
+import net.demondev.frosttech.screen.OreFreezerScreen;
+import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
@@ -29,10 +34,12 @@ public class FrostTech
 
         modEventBus.addListener(this::commonSetup);
 
+        CreativeTab.register(modEventBus);
         ModItems.register(modEventBus);
         ModBlocks.register(modEventBus);
-        CreativeTab.register(modEventBus);
-
+        ModBlockEntities.register(modEventBus);
+        ModRecipes.register(modEventBus);
+        ModMenuTypes.register(modEventBus);
 
           MinecraftForge.EVENT_BUS.register(this);
 
@@ -61,7 +68,7 @@ public class FrostTech
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event)
         {
-
+            MenuScreens.register(ModMenuTypes.ORE_FREEZER_MENU.get(), OreFreezerScreen::new);
         }
     }
 }

@@ -1,6 +1,7 @@
 package net.demondev.frosttech.block;
 
 import net.demondev.frosttech.FrostTech;
+import net.demondev.frosttech.block.custom.OreFreezer;
 import net.demondev.frosttech.item.ModItems;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -21,6 +22,11 @@ public class ModBlocks {
 
     public static final RegistryObject<Block> FROSTY_STONE = registerBlock("frosty_stone",
             () -> new Block(BlockBehaviour.Properties.copy(Blocks.STONE).sound(SoundType.STONE)));
+
+    public static final RegistryObject<Block> ORE_FREEZER = registerBlock("ore_freezer",
+            () -> new OreFreezer(BlockBehaviour.Properties.copy(Blocks.STONE).noOcclusion()));
+
+
 
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block) {
         RegistryObject<T> toReturn = BLOCKS.register(name, block);

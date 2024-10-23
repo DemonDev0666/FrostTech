@@ -3,5 +3,6 @@
   "item.frost_tech.frozen_raw_gold": "Frozen Raw Gold",
   "item.frost_tech.frozen_raw_copper": "Frozen Raw Copper",
   "creativetab.ft_tab": "Frost Tech",
-  "block.frost_tech.frosty_stone": "Frosty Stone"
+  "block.frost_tech.frosty_stone": "Frosty Stone",
+  "block.frost_tech.ore_freezer": "Ore Freezer"
 }
