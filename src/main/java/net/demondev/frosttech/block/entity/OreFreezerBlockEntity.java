@@ -1,7 +1,11 @@
 package net.demondev.frosttech.block.entity;
 
+
+import net.demondev.frosttech.networking.ModMessages;
+import net.demondev.frosttech.networking.packet.EnergySyncS2CPacket;
 import net.demondev.frosttech.recipes.OreFreezerRecipe;
 import net.demondev.frosttech.screen.OreFreezerMenu;
+import net.demondev.frosttech.util.ModEnergyStorage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -15,13 +19,13 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.EnergyStorage;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
@@ -32,8 +36,6 @@ import java.util.Optional;
 
 public class OreFreezerBlockEntity extends BlockEntity implements MenuProvider {
     private final ItemStackHandler itemHandler = new ItemStackHandler(2);
-    private final EnergyStorage energyStorage = new EnergyStorage(10000);  // Energy storage capacity
-    private static final int ENERGY_PER_TICK = 20;  // Energy required per tick for crafting
 
     private static final int INPUT_SLOT = 0;
     private static final int OUTPUT_SLOT = 1;
@@ -43,7 +45,7 @@ public class OreFreezerBlockEntity extends BlockEntity implements MenuProvider {
 
     protected final ContainerData data;
     private int progress = 0;
-    private int maxProgress = 78;  // Time it takes to complete crafting
+    private int maxProgress = 78;
 
     public OreFreezerBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(ModBlockEntities.ORE_FREEZER_BE.get(), pPos, pBlockState);
@@ -53,8 +55,6 @@ public class OreFreezerBlockEntity extends BlockEntity implements MenuProvider {
                 return switch (pIndex) {
                     case 0 -> OreFreezerBlockEntity.this.progress;
                     case 1 -> OreFreezerBlockEntity.this.maxProgress;
-                    case 2 -> OreFreezerBlockEntity.this.energyStorage.getEnergyStored();  // Track energy stored
-                    case 3 -> OreFreezerBlockEntity.this.energyStorage.getMaxEnergyStored();  // Track max energy
                     default -> 0;
                 };
             }
@@ -69,19 +69,31 @@ public class OreFreezerBlockEntity extends BlockEntity implements MenuProvider {
 
             @Override
             public int getCount() {
-                return 4;  // Tracking progress and energy levels
+                return 2;
             }
         };
     }
 
+    private final ModEnergyStorage ENERGY_STORAGE = new ModEnergyStorage(60000, 256) {
+        @Override
+        public void onEnergyChanged() {
+            setChanged();
+            ModMessages.sendToClients(new EnergySyncS2CPacket(this.energy, getBlockPos()));
+        }
+    };
+
+    private static final int ENERGY_REQ = 32;
+    private static final int ENERGY_PER_REDSTONE = 10;
+
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ITEM_HANDLER) {
+        if(cap == ForgeCapabilities.ENERGY) {
+             return lazyEnergyHandler.cast();
+        }
+        if(cap == ForgeCapabilities.ITEM_HANDLER) {
             return lazyItemHandler.cast();
         }
-        if (cap == ForgeCapabilities.ENERGY) {
-            return lazyEnergyHandler.cast();  // Expose energy capability
-        }
+
         return super.getCapability(cap, side);
     }
 
@@ -89,7 +101,7 @@ public class OreFreezerBlockEntity extends BlockEntity implements MenuProvider {
     public void onLoad() {
         super.onLoad();
         lazyItemHandler = LazyOptional.of(() -> itemHandler);
-        lazyEnergyHandler = LazyOptional.of(() -> energyStorage);
+        lazyEnergyHandler = LazyOptional.of(() -> ENERGY_STORAGE);
     }
 
     @Override
@@ -101,7 +113,7 @@ public class OreFreezerBlockEntity extends BlockEntity implements MenuProvider {
 
     public void drops() {
         SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
-        for (int i = 0; i < itemHandler.getSlots(); i++) {
+        for(int i = 0; i < itemHandler.getSlots(); i++) {
             inventory.setItem(i, itemHandler.getStackInSlot(i));
         }
         Containers.dropContents(this.level, this.worldPosition, inventory);
@@ -120,10 +132,11 @@ public class OreFreezerBlockEntity extends BlockEntity implements MenuProvider {
 
     @Override
     protected void saveAdditional(CompoundTag pTag) {
-        super.saveAdditional(pTag);
         pTag.put("inventory", itemHandler.serializeNBT());
         pTag.putInt("ore_freezer.progress", progress);
-        pTag.putInt("energy", energyStorage.getEnergyStored());  // Save energy stored
+        pTag.putInt("ore_freezer.energy", ENERGY_STORAGE.getEnergyStored());
+
+        super.saveAdditional(pTag);
     }
 
     @Override
@@ -131,62 +144,82 @@ public class OreFreezerBlockEntity extends BlockEntity implements MenuProvider {
         super.load(pTag);
         itemHandler.deserializeNBT(pTag.getCompound("inventory"));
         progress = pTag.getInt("ore_freezer.progress");
-
-        int storedEnergy = pTag.getInt("energy");
-        energyStorage.extractEnergy(energyStorage.getEnergyStored(), false);  // Clear current energy
-        energyStorage.receiveEnergy(storedEnergy, false);  // Load energy stored from NBT
+        ENERGY_STORAGE.setEnergy(pTag.getInt("ore_freezer.energy"));
     }
 
-    public void tick(Level pLevel, BlockPos pPos, BlockState pState) {
-        System.out.println("Energy Stored in Block Entity: " + energyStorage.getEnergyStored());
-
-        if (hasRecipe() && hasEnoughEnergy()) {
-            drainEnergyPerTick();  // Drain energy per tick
+    public void tick(Level pLevel, BlockPos pPos, BlockState pState, OreFreezerBlockEntity pEntity) {
+        if(hasRedstoneInFirstSlot(pEntity)) {
+            pEntity.ENERGY_STORAGE.receiveEnergy(64, false);
+            consumeRedstoneForEnergy(pEntity);
+        }       
+        
+          if(hasRecipe() && hasEnoughEnergy(pEntity)) {
             increaseCraftingProgress();
-            setChanged(pLevel, pPos, pState);  // Sync GUI
+            extractEnergy(pEntity);
+            setChanged(pLevel, pPos, pState);
 
-            if (hasProgressFinished()) {
+            if(hasProgressFinished()) {
                 craftItem();
                 resetProgress();
-                setChanged(pLevel, pPos, pState);
             }
         } else {
             resetProgress();
         }
     }
 
-    private boolean hasEnoughEnergy() {
-        return energyStorage.getEnergyStored() >= ENERGY_PER_TICK;  // Ensure block has sufficient energy per tick
+    private boolean hasEnoughEnergy(OreFreezerBlockEntity pEntity) {
+       return pEntity.ENERGY_STORAGE.getEnergyStored() >= ENERGY_REQ * pEntity.maxProgress;
     }
 
-    private void drainEnergyPerTick() {
-        energyStorage.extractEnergy(ENERGY_PER_TICK, false);  // Drain energy for each crafting tick
+    private void extractEnergy(OreFreezerBlockEntity pEntity) {
+        pEntity.ENERGY_STORAGE.extractEnergy(ENERGY_REQ, false);
+    }
+
+    private static boolean hasRedstoneInFirstSlot(OreFreezerBlockEntity pEntity) {
+       return pEntity.itemHandler.getStackInSlot(0).getItem() == Items.REDSTONE;
+    }
+    private void consumeRedstoneForEnergy(OreFreezerBlockEntity pEntity) {
+        ItemStack redstoneStack = pEntity.itemHandler.getStackInSlot(INPUT_SLOT);
+        if (!redstoneStack.isEmpty() && redstoneStack.getItem() == Items.REDSTONE) {
+            pEntity.ENERGY_STORAGE.receiveEnergy(ENERGY_PER_REDSTONE, false);
+            redstoneStack.shrink(1);
+            if (redstoneStack.isEmpty()) {
+                pEntity.itemHandler.setStackInSlot(INPUT_SLOT, ItemStack.EMPTY);
+            }
+        }
+    }
+
+    private void resetProgress() {
+        progress = 0;
     }
 
     private void craftItem() {
         Optional<OreFreezerRecipe> recipe = getCurrentRecipe();
-        if (recipe.isPresent()) {
-            ItemStack result = recipe.get().getResultItem(null);
-            this.itemHandler.extractItem(INPUT_SLOT, 1, false);
-            this.itemHandler.setStackInSlot(OUTPUT_SLOT, new ItemStack(result.getItem(),
-                    this.itemHandler.getStackInSlot(OUTPUT_SLOT).getCount() + result.getCount()));
-        }
+        ItemStack result = recipe.get().getResultItem(null);
+
+        this.itemHandler.extractItem(INPUT_SLOT, 1, false);
+
+        this.itemHandler.setStackInSlot(OUTPUT_SLOT, new ItemStack(result.getItem(),
+                this.itemHandler.getStackInSlot(OUTPUT_SLOT).getCount() + result.getCount()));
     }
 
     private boolean hasRecipe() {
         Optional<OreFreezerRecipe> recipe = getCurrentRecipe();
-        if (recipe.isEmpty()) {
+
+        if(recipe.isEmpty()) {
             return false;
         }
         ItemStack result = recipe.get().getResultItem(getLevel().registryAccess());
+
         return canInsertAmountIntoOutputSlot(result.getCount()) && canInsertItemIntoOutputSlot(result.getItem());
     }
 
     private Optional<OreFreezerRecipe> getCurrentRecipe() {
         SimpleContainer inventory = new SimpleContainer(this.itemHandler.getSlots());
-        for (int i = 0; i < itemHandler.getSlots(); i++) {
+        for(int i = 0; i < itemHandler.getSlots(); i++) {
             inventory.setItem(i, this.itemHandler.getStackInSlot(i));
         }
+
         return this.level.getRecipeManager().getRecipeFor(OreFreezerRecipe.Type.INSTANCE, inventory, level);
     }
 
@@ -206,15 +239,11 @@ public class OreFreezerBlockEntity extends BlockEntity implements MenuProvider {
         progress++;
     }
 
-    private void resetProgress() {
-        progress = 0;
+    public IEnergyStorage getEnergyStorage() {
+        return ENERGY_STORAGE;
     }
 
-    public int getEnergyStored() {
-        return energyStorage.getEnergyStored();  // Access current energy stored
-    }
-
-    public int getMaxEnergyStored() {
-        return energyStorage.getMaxEnergyStored();  // Access maximum energy storage
+    public void setEnergyLevel(int energy) {
+        this.ENERGY_STORAGE.setEnergy(energy);
     }
 }

@@ -5,6 +5,7 @@ import net.demondev.frosttech.block.ModBlocks;
 import net.demondev.frosttech.block.entity.ModBlockEntities;
 import net.demondev.frosttech.item.CreativeTab;
 import net.demondev.frosttech.item.ModItems;
+import net.demondev.frosttech.networking.ModMessages;
 import net.demondev.frosttech.recipes.ModRecipes;
 import net.demondev.frosttech.screen.ModMenuTypes;
 import net.demondev.frosttech.screen.OreFreezerScreen;
@@ -50,7 +51,9 @@ public class FrostTech
     }
 
     private void commonSetup(final FMLCommonSetupEvent event)
-    {}
+    {
+        ModMessages.register();
+    }
 
 
     private void addCreative(BuildCreativeModeTabContentsEvent event)

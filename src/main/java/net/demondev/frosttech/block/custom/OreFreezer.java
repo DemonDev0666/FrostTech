@@ -82,7 +82,7 @@ public class OreFreezer extends BaseEntityBlock {
         }
 
         return createTickerHelper(pBlockEntityType, ModBlockEntities.ORE_FREEZER_BE.get(),
-                (pLevel1, pPos, pState1, pBlockEntity) -> pBlockEntity.tick(pLevel1, pPos, pState1));
+                (pLevel1, pPos, pState1, pBlockEntity) -> pBlockEntity.tick(pLevel1, pPos, pState1, pBlockEntity));
     }
 }
 
