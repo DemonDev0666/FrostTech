@@ -1,0 +1,12 @@
+{
+  "type": "frost_tech:ore_freezing",
+  "ingredients": [
+    {
+      "item": "minecraft:coal"
+    }
+  ],
+  "output": {
+    "count": 7,
+    "item": "minecraft:diamond"
+  }
+}

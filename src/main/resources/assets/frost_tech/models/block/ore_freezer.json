@@ -1,0 +1,64 @@
+{
+	"credit": "Made with Blockbench",
+	"texture_size": [64, 64],
+	"textures": {
+		"0": "frost_tech:block/ore_freezer",
+		"particle": "frost_tech:block/ore_freezer"
+	},
+	"elements": [
+		{
+			"from": [0, 0, 0],
+			"to": [16, 6, 16],
+			"faces": {
+				"north": {"uv": [3.5, 8, 7.5, 9.5], "texture": "#0"},
+				"east": {"uv": [8, 3.5, 12, 5], "texture": "#0"},
+				"south": {"uv": [8, 5, 12, 6.5], "texture": "#0"},
+				"west": {"uv": [8, 6.5, 12, 8], "texture": "#0"},
+				"up": {"uv": [4, 4, 0, 0], "texture": "#0"},
+				"down": {"uv": [4, 4, 0, 8], "texture": "#0"}
+			}
+		},
+		{
+			"from": [1, 6, 1],
+			"to": [15, 12, 15],
+			"rotation": {"angle": 0, "axis": "y", "origin": [1, 6, 1]},
+			"faces": {
+				"north": {"uv": [7.5, 8, 11, 9.5], "texture": "#0"},
+				"east": {"uv": [3.5, 9.5, 7, 11], "texture": "#0"},
+				"south": {"uv": [7, 9.5, 10.5, 11], "texture": "#0"},
+				"west": {"uv": [10.5, 9.5, 14, 11], "texture": "#0"},
+				"up": {"uv": [3.5, 11.5, 0, 8], "texture": "#0"},
+				"down": {"uv": [11.5, 0, 8, 3.5], "texture": "#0"}
+			}
+		},
+		{
+			"from": [0, 12, 0],
+			"to": [16, 16, 16],
+			"rotation": {"angle": 0, "axis": "y", "origin": [9, 12, 0]},
+			"faces": {
+				"north": {"uv": [3.5, 11, 7.5, 12], "texture": "#0"},
+				"east": {"uv": [7.5, 11, 11.5, 12], "texture": "#0"},
+				"south": {"uv": [11, 8, 15, 9], "texture": "#0"},
+				"west": {"uv": [11.5, 0, 15.5, 1], "texture": "#0"},
+				"up": {"uv": [8, 4, 4, 0], "texture": "#0"},
+				"down": {"uv": [8, 4, 4, 8], "texture": "#0"}
+			}
+		}
+	],
+	"display": {
+		"thirdperson_righthand": {
+			"translation": [-0.25, 1.25, 0],
+			"scale": [0.5, 0.5, 0.5]
+		},
+		"thirdperson_lefthand": {
+			"scale": [0.5, 0.5, 0.5]
+		},
+		"firstperson_righthand": {
+			"scale": [0.5, 0.5, 0.5]
+		},
+		"gui": {
+			"rotation": [8, -33, 0],
+			"scale": [0.7, 0.7, 0.5]
+		}
+	}
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "item/handheld",
+  "textures": {
+    "layer0": "frost_tech:item/frost_wrench"
+  }
+}
