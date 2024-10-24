@@ -1,0 +1,12 @@
+{
+  "type": "frost_tech:ore_crushing",
+  "ingredients": [
+    {
+      "item": "frost_tech:frozen_raw_iron"
+    }
+  ],
+  "output": {
+    "count": 18,
+    "item": "frost_tech:frozen_iron_fragment"
+  }
+}

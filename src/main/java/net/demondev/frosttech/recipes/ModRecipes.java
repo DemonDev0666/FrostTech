@@ -14,6 +14,8 @@ public class ModRecipes {
 
     public static final RegistryObject<RecipeSerializer<OreFreezerRecipe>> ORE_FREEZER_SERIALIZER =
             SERIALIZERS.register("ore_freezing", () -> OreFreezerRecipe.Serializer.INSTANCE);
+    public static final RegistryObject<RecipeSerializer<OreCrushingRecipe>> ORE_CRUSHING_SERIALIZER =
+            SERIALIZERS.register("ore_crushing", () -> OreCrushingRecipe.Serializer.INSTANCE);
 
     public static void register(IEventBus eventBus) {
         SERIALIZERS.register(eventBus);

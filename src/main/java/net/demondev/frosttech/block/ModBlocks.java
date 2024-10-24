@@ -1,6 +1,7 @@
 package net.demondev.frosttech.block;
 
 import net.demondev.frosttech.FrostTech;
+import net.demondev.frosttech.block.custom.FrozenOreCrusher;
 import net.demondev.frosttech.block.custom.OreFreezer;
 import net.demondev.frosttech.item.ModItems;
 import net.minecraft.world.item.BlockItem;
@@ -25,6 +26,8 @@ public class ModBlocks {
 
     public static final RegistryObject<Block> ORE_FREEZER = registerBlock("ore_freezer",
             () -> new OreFreezer(BlockBehaviour.Properties.copy(Blocks.STONE).noOcclusion()));
+    public static final RegistryObject<Block> FROZEN_ORE_CRUSHER = registerBlock("frozen_ore_crusher",
+            () -> new FrozenOreCrusher(BlockBehaviour.Properties.copy(Blocks.STONE).noOcclusion()));
 
 
 

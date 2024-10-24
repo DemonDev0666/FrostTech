@@ -1,6 +1,8 @@
 package net.demondev.frosttech.networking.packet;
 
+import net.demondev.frosttech.block.entity.FrozenOreCrusherBlockEntity;
 import net.demondev.frosttech.block.entity.OreFreezerBlockEntity;
+import net.demondev.frosttech.screen.FrozenOreCrusherMenu;
 import net.demondev.frosttech.screen.OreFreezerMenu;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -37,16 +39,24 @@ public class EnergySyncS2CPacket {
         context.enqueueWork(() -> {
             // Check if Minecraft instance and level are valid
             if (Minecraft.getInstance().level != null) {
-                // Get the block entity at the specified position
+                // Handle OreFreezerBlockEntity
                 if (Minecraft.getInstance().level.getBlockEntity(pos) instanceof OreFreezerBlockEntity blockEntity) {
-                    // Update the block entity's energy level
                     blockEntity.setEnergyLevel(energy);
 
-                    // Check if the player is interacting with the correct container menu
                     if (Minecraft.getInstance().player != null &&
                             Minecraft.getInstance().player.containerMenu instanceof OreFreezerMenu menu &&
                             menu.getBlockEntity().getBlockPos().equals(pos)) {
-                        // Update the energy level in the menu (if applicable)
+                        menu.getBlockEntity().setEnergyLevel(energy);
+                    }
+                }
+
+                // Handle FrozenOreCrusherBlockEntity
+                if (Minecraft.getInstance().level.getBlockEntity(pos) instanceof FrozenOreCrusherBlockEntity blockEntity) {
+                    blockEntity.setEnergyLevel(energy);
+
+                    if (Minecraft.getInstance().player != null &&
+                            Minecraft.getInstance().player.containerMenu instanceof FrozenOreCrusherMenu menu &&
+                            menu.getBlockEntity().getBlockPos().equals(pos)) {
                         menu.getBlockEntity().setEnergyLevel(energy);
                     }
                 }

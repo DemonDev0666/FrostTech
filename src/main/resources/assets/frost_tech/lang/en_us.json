@@ -2,7 +2,9 @@
   "item.frost_tech.frozen_raw_iron": "Frozen Raw Iron",
   "item.frost_tech.frozen_raw_gold": "Frozen Raw Gold",
   "item.frost_tech.frozen_raw_copper": "Frozen Raw Copper",
+  "item.frost_tech.frozen_iron_fragment": "Frozen Iron Fragment",
   "creativetab.ft_tab": "Frost Tech",
   "block.frost_tech.frosty_stone": "Frosty Stone",
-  "block.frost_tech.ore_freezer": "Ore Freezer"
+  "block.frost_tech.ore_freezer": "Ore Freezer",
+  "block.frost_tech.frozen_ore_crusher": "Frozen Ore Crusher"
 }

@@ -16,6 +16,8 @@ public class ModMenuTypes {
 
     public static final RegistryObject<MenuType<OreFreezerMenu>> ORE_FREEZER_MENU =
             registerMenuType("ore_freezer_menu", OreFreezerMenu::new);
+    public static final RegistryObject<MenuType<FrozenOreCrusherMenu>> FROZEN_ORE_CRUSHER_MENU =
+            registerMenuType("frozen_ore_crusher_menu", FrozenOreCrusherMenu::new);
 
 
     private static <T extends AbstractContainerMenu>RegistryObject<MenuType<T>> registerMenuType(String name, IContainerFactory<T> factory) {

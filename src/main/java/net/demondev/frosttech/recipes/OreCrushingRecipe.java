@@ -1,6 +1,5 @@
 package net.demondev.frosttech.recipes;
 
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.demondev.frosttech.FrostTech;
@@ -15,12 +14,12 @@ import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
-public class OreFreezerRecipe implements Recipe<SimpleContainer> {
+public class OreCrushingRecipe implements Recipe<SimpleContainer> {
     private final NonNullList<Ingredient> inputItems;
     private final ItemStack output;
     private final ResourceLocation id;
 
-    public OreFreezerRecipe(NonNullList<Ingredient> inputItems, ItemStack output, ResourceLocation id) {
+    public OreCrushingRecipe(NonNullList<Ingredient> inputItems, ItemStack output, ResourceLocation id) {
         this.inputItems = inputItems;
         this.output = output;
         this.id = id;
@@ -57,25 +56,25 @@ public class OreFreezerRecipe implements Recipe<SimpleContainer> {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return Serializer.INSTANCE;
+        return OreCrushingRecipe.Serializer.INSTANCE;
     }
 
     @Override
     public RecipeType<?> getType() {
-        return Type.INSTANCE;
+        return OreCrushingRecipe.Type.INSTANCE;
     }
 
-    public static class Type implements RecipeType<OreFreezerRecipe> {
-        public static final Type INSTANCE = new Type();
-        public static final String ID = "ore_freezing";
+    public static class Type implements RecipeType<OreCrushingRecipe> {
+        public static final OreCrushingRecipe.Type INSTANCE = new OreCrushingRecipe.Type();
+        public static final String ID = "ore_crushing";
     }
 
-    public static class Serializer implements RecipeSerializer<OreFreezerRecipe> {
-        public static final Serializer INSTANCE = new Serializer();
-        public static final ResourceLocation ID = new ResourceLocation(FrostTech.MOD_ID, "ore_freezing");
+    public static class Serializer implements RecipeSerializer<OreCrushingRecipe> {
+        public static final OreCrushingRecipe.Serializer INSTANCE = new OreCrushingRecipe.Serializer();
+        public static final ResourceLocation ID = new ResourceLocation(FrostTech.MOD_ID, "ore_crushing");
 
         @Override
-        public OreFreezerRecipe fromJson(ResourceLocation pRecipeId, JsonObject pSerializedRecipe) {
+        public OreCrushingRecipe fromJson(ResourceLocation pRecipeId, JsonObject pSerializedRecipe) {
             ItemStack output = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(pSerializedRecipe, "output"));
 
             JsonArray ingredients = GsonHelper.getAsJsonArray(pSerializedRecipe, "ingredients");
@@ -85,11 +84,11 @@ public class OreFreezerRecipe implements Recipe<SimpleContainer> {
                 inputs.set(i, Ingredient.fromJson(ingredients.get(i)));
             }
 
-            return new OreFreezerRecipe(inputs, output, pRecipeId);
+            return new OreCrushingRecipe(inputs, output, pRecipeId);
         }
 
         @Override
-        public @Nullable OreFreezerRecipe fromNetwork(ResourceLocation pRecipeId, FriendlyByteBuf pBuffer) {
+        public @Nullable OreCrushingRecipe fromNetwork(ResourceLocation pRecipeId, FriendlyByteBuf pBuffer) {
             NonNullList<Ingredient> inputs = NonNullList.withSize(pBuffer.readInt(), Ingredient.EMPTY);
 
             for(int i = 0; i < inputs.size(); i++) {
@@ -97,11 +96,11 @@ public class OreFreezerRecipe implements Recipe<SimpleContainer> {
             }
 
             ItemStack output = pBuffer.readItem();
-            return new OreFreezerRecipe(inputs, output, pRecipeId);
+            return new OreCrushingRecipe(inputs, output, pRecipeId);
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf pBuffer, OreFreezerRecipe pRecipe) {
+        public void toNetwork(FriendlyByteBuf pBuffer, OreCrushingRecipe pRecipe) {
             pBuffer.writeInt(pRecipe.inputItems.size());
 
             for (Ingredient ingredient : pRecipe.getIngredients()) {

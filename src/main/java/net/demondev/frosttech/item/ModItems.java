@@ -17,6 +17,8 @@ public class ModItems {
             () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> FROZEN_RAW_GOLD = ITEMS.register("frozen_raw_gold",
             () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> FROZEN_IRON_FRAGMENT = ITEMS.register("frozen_iron_fragment",
+            () -> new Item(new Item.Properties()));
 
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);

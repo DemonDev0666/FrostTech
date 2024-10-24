@@ -1,6 +1,7 @@
 package net.demondev.frosttech.screen;
 
 import net.demondev.frosttech.block.ModBlocks;
+import net.demondev.frosttech.block.entity.FrozenOreCrusherBlockEntity;
 import net.demondev.frosttech.block.entity.OreFreezerBlockEntity;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -12,19 +13,19 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.SlotItemHandler;
 
-public class OreFreezerMenu extends AbstractContainerMenu {
-    public final OreFreezerBlockEntity blockEntity;
+public class FrozenOreCrusherMenu extends AbstractContainerMenu {
+    public final FrozenOreCrusherBlockEntity blockEntity;
     private final Level level;
     private final ContainerData data;
 
-    public OreFreezerMenu(int pContainerId, Inventory inv, FriendlyByteBuf extraData) {
+    public FrozenOreCrusherMenu(int pContainerId, Inventory inv, FriendlyByteBuf extraData) {
         this(pContainerId, inv, inv.player.level().getBlockEntity(extraData.readBlockPos()), new SimpleContainerData(2));
     }
 
-    public OreFreezerMenu(int pContainerId, Inventory inv, BlockEntity entity, ContainerData data) {
-        super(ModMenuTypes.ORE_FREEZER_MENU.get(), pContainerId);
+    public FrozenOreCrusherMenu(int pContainerId, Inventory inv, BlockEntity entity, ContainerData data) {
+        super(ModMenuTypes.FROZEN_ORE_CRUSHER_MENU.get(), pContainerId);
         checkContainerSize(inv, 2);
-        blockEntity = ((OreFreezerBlockEntity) entity);
+        blockEntity = ((FrozenOreCrusherBlockEntity) entity);
         this.level = inv.player.level();
         this.data = data;
 
@@ -44,13 +45,13 @@ public class OreFreezerMenu extends AbstractContainerMenu {
     }
 
     public int getScaledProgress() {
-        int progress = this.data.get(0);
-        int maxProgress = this.data.get(1);  // Max Progress
-        int progressArrowSize = 26; // This is the height in pixels of your arrow
+        int progress = this.data.get(0); // Current progress
+        int maxProgress = this.data.get(1); // Maximum progress
+        int progressArrowSize = 26; // The width/height in pixels of the progress arrow in the GUI
 
         return maxProgress != 0 && progress != 0 ? progress * progressArrowSize / maxProgress : 0;
-    }
-    public OreFreezerBlockEntity getBlockEntity() {
+}
+    public FrozenOreCrusherBlockEntity getBlockEntity() {
         return this.blockEntity;
     }
 
@@ -102,7 +103,7 @@ public class OreFreezerMenu extends AbstractContainerMenu {
     @Override
     public boolean stillValid(Player pPlayer) {
         return stillValid(ContainerLevelAccess.create(level, blockEntity.getBlockPos()),
-                pPlayer, ModBlocks.ORE_FREEZER.get());
+                pPlayer, ModBlocks.FROZEN_ORE_CRUSHER.get());
     }
 
     private void addPlayerInventory(Inventory playerInventory) {

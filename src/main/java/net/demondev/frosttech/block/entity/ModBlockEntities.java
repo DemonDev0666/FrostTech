@@ -16,6 +16,10 @@ public class ModBlockEntities {
             BLOCK_ENTITIES.register("ore_freezer_be", () ->
                     BlockEntityType.Builder.of(OreFreezerBlockEntity::new,
                             ModBlocks.ORE_FREEZER.get()).build(null));
+    public static final RegistryObject<BlockEntityType<FrozenOreCrusherBlockEntity>> FROZEN_ORE_CRUSHER_BE =
+            BLOCK_ENTITIES.register("frozen_ore_crusher_be", () ->
+                    BlockEntityType.Builder.of(FrozenOreCrusherBlockEntity::new,
+                            ModBlocks.FROZEN_ORE_CRUSHER.get()).build(null));
 
 
     public static void register(IEventBus eventBus) {

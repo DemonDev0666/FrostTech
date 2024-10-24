@@ -7,6 +7,8 @@ import net.demondev.frosttech.item.CreativeTab;
 import net.demondev.frosttech.item.ModItems;
 import net.demondev.frosttech.networking.ModMessages;
 import net.demondev.frosttech.recipes.ModRecipes;
+import net.demondev.frosttech.screen.FrozenOreCrusherMenu;
+import net.demondev.frosttech.screen.FrozenOreCrusherScreen;
 import net.demondev.frosttech.screen.ModMenuTypes;
 import net.demondev.frosttech.screen.OreFreezerScreen;
 import net.minecraft.client.gui.screens.MenuScreens;
@@ -72,6 +74,7 @@ public class FrostTech
         public static void onClientSetup(FMLClientSetupEvent event)
         {
             MenuScreens.register(ModMenuTypes.ORE_FREEZER_MENU.get(), OreFreezerScreen::new);
+            MenuScreens.register(ModMenuTypes.FROZEN_ORE_CRUSHER_MENU.get(), FrozenOreCrusherScreen::new);
         }
     }
 }
